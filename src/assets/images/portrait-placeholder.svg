@@ -1,0 +1,12 @@
+<svg width="600" height="800" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="600" height="800" fill="#1E1E1E"/>
+  <circle cx="300" cy="300" r="150" fill="#333333"/>
+  <circle cx="250" cy="260" r="20" fill="#666666"/>
+  <circle cx="350" cy="260" r="20" fill="#666666"/>
+  <path d="M250 400C250 370.147 275.147 345 305 345H295C324.853 345 350 370.147 350 400V410H250V400Z" fill="#666666"/>
+  <rect x="200" y="450" width="200" height="200" rx="20" fill="#333333"/>
+  <rect x="200" y="680" width="200" height="40" rx="20" fill="#333333"/>
+  <rect x="200" y="740" width="200" height="20" rx="10" fill="#333333"/>
+  <text x="300" y="500" font-family="Arial" font-size="24" fill="white" text-anchor="middle">Your Photo</text>
+  <text x="300" y="540" font-family="Arial" font-size="16" fill="#999" text-anchor="middle">(Portrait will be displayed here)</text>
+</svg>
