@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Portfolio Website
 
 A modern, responsive portfolio website built with React, TypeScript, Tailwind CSS, and Framer Motion. This portfolio showcases your work, skills, and experience in a clean and professional manner.
@@ -7,6 +6,7 @@ A modern, responsive portfolio website built with React, TypeScript, Tailwind CS
 
 - **Responsive Design**: Works on all devices
 - **Modern UI**: Clean and professional design with smooth animations
+- **AI Answer Modal**: Perplexity-style AI-powered search with Exa API
 - **Dark Mode**: Built-in dark theme with custom color scheme
 - **Interactive Elements**: Hover effects, smooth scrolling, and more
 - **Performance Optimized**: Fast loading and smooth animations
@@ -27,6 +27,7 @@ A modern, responsive portfolio website built with React, TypeScript, Tailwind CS
 - [Framer Motion](https://www.framer.com/motion/) - Animation library for React
 - [React Icons](https://react-icons.github.io/react-icons/) - Popular icons library
 - [React Hot Toast](https://react-hot-toast.com/) - Beautiful toast notifications
+- [Exa AI](https://exa.ai/) - AI-powered search and answer API
 
 ## 🚀 Getting Started
 
@@ -39,8 +40,8 @@ A modern, responsive portfolio website built with React, TypeScript, Tailwind CS
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/portfolio.git
-   cd portfolio
+   git clone https://github.com/fodonfoto/new-my-portfolio.git
+   cd new-my-portfolio
    ```
 
 2. Install dependencies:
@@ -50,14 +51,20 @@ A modern, responsive portfolio website built with React, TypeScript, Tailwind CS
    yarn
    ```
 
-3. Start the development server:
+3. Set up environment variables:
+   ```bash
+   cp .env.local.example .env.local
+   # Add your Exa API key to .env.local
+   ```
+
+4. Start the development server:
    ```bash
    npm run dev
    # or
    yarn dev
    ```
 
-4. Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
+5. Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
 
 ### Building for Production
 
@@ -80,7 +87,13 @@ src/
 │   ├── HeaderNav.tsx  # Navigation header
 │   ├── Portrait.tsx   # Profile image component
 │   ├── SloganInto.tsx # Hero section component
-│   └── Social.tsx     # Social media links
+│   ├── Social.tsx     # Social media links
+│   ├── AIInputSearch.tsx # AI search input component
+│   └── AnswerModal.tsx   # Perplexity-style answer modal
+├── services/          # API services
+│   └── exaSearch.ts   # Exa AI API integration
+├── hooks/             # Custom React hooks
+├── lib/               # Utility functions
 ├── App.tsx            # Main application component
 └── main.tsx           # Application entry point
 ```
@@ -97,15 +110,26 @@ src/
 3. **Update Content**:
    - Edit the content in the respective component files to reflect your information.
 
+4. **Configure AI Search**:
+   - Get your Exa API key from [Exa.ai](https://exa.ai)
+   - Add it to your `.env.local` file
+   - See `EXA_SETUP.md` for detailed setup instructions
+
+## 🤖 AI Features
+
+- **Perplexity-style Modal**: Beautiful answer display with sources
+- **Real-time Search**: AI-powered web search with Exa API
+- **Source Citations**: Clickable sources with copy functionality
+- **Smooth Animations**: Framer Motion powered interactions
+- **Error Handling**: Comprehensive error states and loading indicators
+
 ## 📝 License
 
 This project is open source and available under the [MIT License](LICENSE).
 
 ## 🙏 Acknowledgments
 
-- Design inspired by [Bentolio Portfolio Template](https://www.figma.com/community/file/1234567890)
+- Design inspired by modern portfolio templates
 - Built with [Vite](https://vitejs.dev/) and [React](https://reactjs.org/)
 - Icons by [Lucide](https://lucide.dev/)
-=======
-# new-my-portfolio
->>>>>>> 3d31dee43f7d3d536a248c3e25f3eb2681791010
+- AI search powered by [Exa AI](https://exa.ai/)
