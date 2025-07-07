@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Portfolio Website
 
 A modern, responsive portfolio website built with React, TypeScript, Tailwind CSS, and Framer Motion. This portfolio showcases your work, skills, and experience in a clean and professional manner.
@@ -105,3 +106,6 @@ This project is open source and available under the [MIT License](LICENSE).
 - Design inspired by [Bentolio Portfolio Template](https://www.figma.com/community/file/1234567890)
 - Built with [Vite](https://vitejs.dev/) and [React](https://reactjs.org/)
 - Icons by [Lucide](https://lucide.dev/)
+=======
+# new-my-portfolio
+>>>>>>> 3d31dee43f7d3d536a248c3e25f3eb2681791010

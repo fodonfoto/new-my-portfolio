@@ -7,6 +7,8 @@ import resumePDF from '../assets/images/Niwat_Yah_CV_2025.pdf';
 type NavLink = {
   name: string;
   href: string;
+  target?: string;
+  rel?: string;
 };
 
 const navLinks: NavLink[] = [
