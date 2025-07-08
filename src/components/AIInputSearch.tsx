@@ -43,8 +43,8 @@ export default function AIInputSearch() {
         try {
             console.log('Searching for:', query.trim());
             
-            // Use fallback method that provides demo response if API fails
-            const response = await exaSearchService.getAnswerWithFallback({
+            // Use direct API call (will throw error if fails)
+            const response = await exaSearchService.getAnswer({
                 query: query.trim(),
                 numSources: 5,
                 useAutoprompt: true,

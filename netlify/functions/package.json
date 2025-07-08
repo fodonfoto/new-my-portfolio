@@ -1,1 +1,8 @@
-
+{
+  "name": "netlify-functions",
+  "version": "1.0.0",
+  "description": "Netlify functions for the application",
+  "main": "exa-proxy.js",
+  "dependencies": {},
+  "devDependencies": {}
+}
