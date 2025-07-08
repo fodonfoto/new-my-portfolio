@@ -41,16 +41,21 @@ export default function AIInputSearch() {
         setIsModalOpen(true); // Open modal immediately
 
         try {
-            const response = await exaSearchService.getAnswer({
+            console.log('Searching for:', query.trim());
+            
+            // Use fallback method that provides demo response if API fails
+            const response = await exaSearchService.getAnswerWithFallback({
                 query: query.trim(),
                 numSources: 5,
                 useAutoprompt: true,
                 type: 'neural',
             });
 
+            console.log('Search result:', response);
             setAnswerResult(response);
             toast.success("Answer generated successfully!");
         } catch (err) {
+            console.error('Search error:', err);
             const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
             setError(errorMessage);
             setAnswerResult(null);
@@ -134,11 +139,13 @@ export default function AIInputSearch() {
             <div className="relative max-w-xl w-full mx-auto">
                 {/* API Key Warning - Only show if no fallback is working */}
                 {!import.meta.env.VITE_EXA_API_KEY && (
-                    <div className="mb-4 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                        <p className="text-blue-300 text-xs">
-                            Using demo API key. For production deployment, set VITE_EXA_API_KEY in your hosting platform.
-                        </p>
+                    <div className="mb-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                        <div className="text-yellow-300 text-xs space-y-1">
+                            <p>⚠️ Exa API key not configured in production.</p>
+                            <p>Please set <code className="bg-yellow-900/50 px-1 rounded">VITE_EXA_API_KEY</code> in your Netlify environment variables.</p>
+                            <p>Using demo mode with limited functionality.</p>
+                        </div>
                     </div>
                 )}
 
