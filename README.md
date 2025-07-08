@@ -53,11 +53,19 @@ A modern, responsive portfolio website built with React, TypeScript, Tailwind CS
 
 3. Set up environment variables:
    ```bash
-   cp .env.local.example .env.local
-   # Add your Exa API key to .env.local
+   cp .env.example .env.local
+   # Edit .env.local and add your Exa API key
    ```
 
-4. Start the development server:
+4. Get your Exa API key:
+   - Visit [Exa.ai](https://exa.ai)
+   - Sign up and get your API key
+   - Add it to `.env.local`:
+     ```
+     VITE_EXA_API_KEY=your_actual_api_key_here
+     ```
+
+5. Start the development server:
    ```bash
    npm run dev
    # or
@@ -114,6 +122,27 @@ src/
    - Get your Exa API key from [Exa.ai](https://exa.ai)
    - Add it to your `.env.local` file
    - See `EXA_SETUP.md` for detailed setup instructions
+
+## 🚀 Deployment
+
+### Environment Variables for Production
+
+When deploying to Netlify, Vercel, or other platforms, make sure to set these environment variables:
+
+```
+VITE_EXA_API_KEY=your_exa_api_key_here
+VITE_EXA_API_URL=https://api.exa.ai
+```
+
+#### Netlify:
+1. Go to Site settings → Environment variables
+2. Add the variables above
+3. Redeploy your site
+
+#### Vercel:
+1. Go to Settings → Environment Variables  
+2. Add the variables above
+3. Redeploy your project
 
 ## 🤖 AI Features
 
