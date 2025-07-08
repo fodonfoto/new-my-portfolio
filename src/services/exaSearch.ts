@@ -82,7 +82,7 @@ class ExaSearchService {
     }
 
     // Retry logic
-    const maxRetries = 3;
+    const maxRetries = 2;
     let lastError: any;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -93,8 +93,9 @@ class ExaSearchService {
           
         console.log(`Making Exa API request (attempt ${attempt}/${maxRetries}):`, {
           url: requestUrl,
-          query: options.query,
-          isProduction: import.meta.env.PROD
+          query: options.query.substring(0, 50) + '...',
+          isProduction: import.meta.env.PROD,
+          numSources: options.numSources
         });
 
         const requestBody = {
@@ -113,7 +114,7 @@ class ExaSearchService {
         };
 
         const requestConfig: any = {
-          timeout: 45000,
+          timeout: 60000, // Increase timeout to 60 seconds
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -130,67 +131,84 @@ class ExaSearchService {
 
         const response = await axios.post(requestUrl, requestBody, requestConfig);
 
-        console.log('Exa API response received:', response.status);
+        console.log('Exa API response received:', {
+          status: response.status,
+          hasAnswer: !!response.data?.answer,
+          answerLength: response.data?.answer?.length || 0,
+          sourcesCount: response.data?.sources?.length || 0
+        });
         
-        // Handle non-2xx responses
+        // Handle error responses
         if (response.status >= 400) {
-          throw new Error(`API returned status ${response.status}: ${response.data?.message || 'Unknown error'}`);
+          const errorMsg = response.data?.error || response.data?.message || `HTTP ${response.status}`;
+          throw new Error(`API returned status ${response.status}: ${errorMsg}`);
+        }
+
+        // Validate response structure
+        if (!response.data || typeof response.data !== 'object') {
+          throw new Error('Invalid response format from API');
+        }
+
+        if (!response.data.answer && !response.data.sources) {
+          throw new Error('API response missing required fields (answer or sources)');
         }
         
         return response.data;
       } catch (error) {
         lastError = error;
-        console.error(`Exa API Error (attempt ${attempt}/${maxRetries}):`, error);
+        console.error(`Exa API Error (attempt ${attempt}/${maxRetries}):`, {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          status: axios.isAxiosError(error) ? error.response?.status : 'N/A',
+          url: axios.isAxiosError(error) ? error.config?.url : 'N/A'
+        });
         
         if (axios.isAxiosError(error)) {
           const status = error.response?.status;
-          const message = error.response?.data?.message || error.message;
-          
-          console.error('Axios Error:', {
-            status,
-            message,
-            url: error.config?.url,
-            method: error.config?.method,
-            code: error.code
-          });
           
           // Don't retry on certain errors
           if (status === 401 || status === 403) {
-            throw new Error('Invalid Exa API key. Please check your API key configuration.');
+            throw new Error('Invalid API key or insufficient permissions. Please check your configuration.');
+          }
+          
+          if (status === 400) {
+            throw new Error(`Bad request: ${error.response?.data?.error || error.response?.data?.message || 'Invalid request parameters'}`);
           }
           
           // Wait before retry (except on last attempt)
-          if (attempt < maxRetries) {
-            const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Exponential backoff, max 5s
+          if (attempt < maxRetries && status !== 400) {
+            const delay = Math.min(2000 * attempt, 5000); // Progressive delay, max 5s
             console.log(`Waiting ${delay}ms before retry...`);
             await new Promise(resolve => setTimeout(resolve, delay));
             continue;
           }
         }
         
-        // If this is the last attempt, throw the error
+        // If this is the last attempt, break the loop
         if (attempt === maxRetries) {
           break;
         }
       }
     }
     
-    // Handle final error
+    // Handle final error after all retries
     if (axios.isAxiosError(lastError)) {
       const status = lastError.response?.status;
+      const errorData = lastError.response?.data;
       
       if (lastError.code === 'NETWORK_ERROR' || lastError.message.includes('Network Error')) {
-        throw new Error('Unable to connect to Exa API. Please check your internet connection and try again.');
+        throw new Error('Unable to connect to the API. Please check your internet connection and try again.');
       } else if (status === 429) {
-        throw new Error('Rate limit exceeded. Please try again later.');
+        throw new Error('Rate limit exceeded. Please wait a moment and try again.');
       } else if (status && status >= 500) {
-        throw new Error('Exa API server error. Please try again later.');
+        throw new Error('API server error. Please try again later.');
+      } else if (errorData?.error) {
+        throw new Error(`API Error: ${errorData.error}`);
       } else {
-        throw new Error(`Exa API error: ${lastError.response?.data?.message || lastError.message}`);
+        throw new Error(`Request failed: ${lastError.message}`);
       }
     }
     
-    throw new Error('Network error. Please check your internet connection and try again.');
+    throw new Error(`Failed to get response after ${maxRetries} attempts. Please try again later.`);
   }
 
   // Mock response for testing when API is not available
