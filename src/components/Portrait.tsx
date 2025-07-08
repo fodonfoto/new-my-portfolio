@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useTiltEffect } from '../hooks/useTiltEffect';
-const portraitImage = '/images/3d.png';
+const portraitImage = '/images/image 1.png';
 
 type PortraitProps = {
   alt?: string;

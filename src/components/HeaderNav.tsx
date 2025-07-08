@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-const resumePDF = '/Niwat_Yah_CV_2025.pdf';
+const resumePDF = '/images/Niwat_Yah_CV_2025.pdf';
 const logoImage = '/images/n 1.png';
 
 type NavLink = {
