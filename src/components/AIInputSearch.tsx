@@ -132,12 +132,12 @@ export default function AIInputSearch() {
             </div>
 
             <div className="relative max-w-xl w-full mx-auto">
-                {/* API Key Warning */}
+                {/* API Key Warning - Only show if no fallback is working */}
                 {!import.meta.env.VITE_EXA_API_KEY && (
-                    <div className="mb-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-                        <p className="text-yellow-300 text-xs">
-                            Exa API key not configured. Please set VITE_EXA_API_KEY in your .env.local file.
+                    <div className="mb-4 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                        <p className="text-blue-300 text-xs">
+                            Using demo API key. For production deployment, set VITE_EXA_API_KEY in your hosting platform.
                         </p>
                     </div>
                 )}

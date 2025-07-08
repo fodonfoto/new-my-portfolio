@@ -50,11 +50,12 @@ class ExaSearchService {
   private baseUrl: string;
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_EXA_API_KEY || '';
+    // Use environment variable first, fallback to hardcoded key for production
+    this.apiKey = import.meta.env.VITE_EXA_API_KEY || '8c4bb9e7-1c61-4aa4-ad79-7e979fdf9876';
     this.baseUrl = import.meta.env.VITE_EXA_API_URL || 'https://api.exa.ai';
     
-    if (!this.apiKey) {
-      console.warn('Exa API key not found. Please set VITE_EXA_API_KEY in your environment variables.');
+    if (!import.meta.env.VITE_EXA_API_KEY) {
+      console.warn('Using fallback API key. For production, please set VITE_EXA_API_KEY in your environment variables.');
     }
   }
 
