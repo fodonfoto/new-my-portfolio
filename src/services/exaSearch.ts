@@ -48,46 +48,56 @@ export interface ExaSearchResponse {
 class ExaSearchService {
   private apiKey: string;
   private baseUrl: string;
+  private proxyUrl: string;
 
   constructor() {
     // Try to get from Vite environment variables (works in both dev and prod)
     this.apiKey = import.meta.env.VITE_EXA_API_KEY || '';
     this.baseUrl = import.meta.env.VITE_EXA_API_URL || 'https://api.exa.ai';
     
-    // For development, use fallback values if not set
-    if (import.meta.env.DEV) {
+    // Use Netlify function proxy in production, direct API in development
+    if (import.meta.env.PROD) {
+      this.proxyUrl = '/.netlify/functions/exa-proxy';
+    } else {
+      this.proxyUrl = this.baseUrl;
+      // For development, use fallback values if not set
       if (!this.apiKey) {
         this.apiKey = '8c4bb9e7-1c61-4aa4-ad79-7e979fdf9876';
-        console.warn('Development: Using fallback API key. For production, set VITE_EXA_API_KEY in Netlify environment variables.');
-      }
-      
-      if (!this.baseUrl) {
-        this.baseUrl = 'https://api.exa.ai';
-        console.warn('Development: Using fallback API URL. For production, set VITE_EXA_API_URL in Netlify environment variables.');
+        console.warn('Development: Using fallback API key. For production, set EXA_API_KEY in Netlify environment variables.');
       }
     }
     
-    // For production, throw error if API key is not set
-    if (import.meta.env.PROD && !this.apiKey) {
-      throw new Error('Exa API key is required in production. Please set VITE_EXA_API_KEY in Netlify environment variables.');
-    }
+    console.log('ExaSearchService initialized:', {
+      isDev: import.meta.env.DEV,
+      isProd: import.meta.env.PROD,
+      proxyUrl: this.proxyUrl,
+      hasApiKey: !!this.apiKey
+    });
   }
 
   async getAnswer(options: ExaAnswerOptions): Promise<ExaAnswerResponse> {
-    if (!this.apiKey) {
+    // In production, we don't need API key check since it's handled by the proxy
+    if (import.meta.env.DEV && !this.apiKey) {
       throw new Error('Exa API key is required. Please set VITE_EXA_API_KEY in your environment variables.');
     }
 
-    try {
-      console.log('Making Exa API request:', {
-        url: `${this.baseUrl}/answer`,
-        query: options.query,
-        hasApiKey: !!this.apiKey
-      });
+    // Retry logic
+    const maxRetries = 3;
+    let lastError: any;
 
-      const response = await axios.post(
-        `${this.baseUrl}/answer`,
-        {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const requestUrl = import.meta.env.PROD 
+          ? this.proxyUrl 
+          : `${this.baseUrl}/answer`;
+          
+        console.log(`Making Exa API request (attempt ${attempt}/${maxRetries}):`, {
+          url: requestUrl,
+          query: options.query,
+          isProduction: import.meta.env.PROD
+        });
+
+        const requestBody = {
           query: options.query,
           numSources: options.numSources || 5,
           includeDomains: options.includeDomains,
@@ -100,48 +110,87 @@ class ExaSearchService {
           type: options.type || 'neural',
           category: options.category,
           stream: options.stream ?? false,
-        },
-        {
+        };
+
+        const requestConfig: any = {
+          timeout: 45000,
           headers: {
-            'Authorization': `Bearer ${this.apiKey}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
-          timeout: 30000, // 30 seconds timeout
-          withCredentials: false, // Disable credentials for CORS
-        }
-      );
+        };
 
-      console.log('Exa API response received:', response.status);
-      return response.data;
-    } catch (error) {
-      console.error('Exa API Error Details:', error);
-      
-      if (axios.isAxiosError(error)) {
-        const status = error.response?.status;
-        const message = error.response?.data?.message || error.message;
+        // Only add Authorization header in development (direct API call)
+        if (import.meta.env.DEV) {
+          requestConfig.headers['Authorization'] = `Bearer ${this.apiKey}`;
+          requestConfig.headers['X-Requested-With'] = 'XMLHttpRequest';
+          requestConfig.withCredentials = false;
+          requestConfig.validateStatus = (status: number) => status < 500;
+        }
+
+        const response = await axios.post(requestUrl, requestBody, requestConfig);
+
+        console.log('Exa API response received:', response.status);
         
-        console.error('Axios Error:', {
-          status,
-          message,
-          url: error.config?.url,
-          method: error.config?.method
-        });
+        // Handle non-2xx responses
+        if (response.status >= 400) {
+          throw new Error(`API returned status ${response.status}: ${response.data?.message || 'Unknown error'}`);
+        }
         
-        if (error.code === 'NETWORK_ERROR' || error.message.includes('Network Error')) {
-          throw new Error('Unable to connect to Exa API. This might be due to CORS policy or network restrictions. Please try again later.');
-        } else if (status === 401) {
-          throw new Error('Invalid Exa API key. Please check your VITE_EXA_API_KEY.');
-        } else if (status === 429) {
-          throw new Error('Rate limit exceeded. Please try again later.');
-        } else if (status && status >= 500) {
-          throw new Error('Exa API server error. Please try again later.');
-        } else {
-          throw new Error(`Exa API error: ${error.response?.data?.message || error.message}`);
+        return response.data;
+      } catch (error) {
+        lastError = error;
+        console.error(`Exa API Error (attempt ${attempt}/${maxRetries}):`, error);
+        
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
+          const message = error.response?.data?.message || error.message;
+          
+          console.error('Axios Error:', {
+            status,
+            message,
+            url: error.config?.url,
+            method: error.config?.method,
+            code: error.code
+          });
+          
+          // Don't retry on certain errors
+          if (status === 401 || status === 403) {
+            throw new Error('Invalid Exa API key. Please check your API key configuration.');
+          }
+          
+          // Wait before retry (except on last attempt)
+          if (attempt < maxRetries) {
+            const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Exponential backoff, max 5s
+            console.log(`Waiting ${delay}ms before retry...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            continue;
+          }
+        }
+        
+        // If this is the last attempt, throw the error
+        if (attempt === maxRetries) {
+          break;
         }
       }
-      throw new Error('Network error. Please check your internet connection.');
     }
+    
+    // Handle final error
+    if (axios.isAxiosError(lastError)) {
+      const status = lastError.response?.status;
+      
+      if (lastError.code === 'NETWORK_ERROR' || lastError.message.includes('Network Error')) {
+        throw new Error('Unable to connect to Exa API. Please check your internet connection and try again.');
+      } else if (status === 429) {
+        throw new Error('Rate limit exceeded. Please try again later.');
+      } else if (status && status >= 500) {
+        throw new Error('Exa API server error. Please try again later.');
+      } else {
+        throw new Error(`Exa API error: ${lastError.response?.data?.message || lastError.message}`);
+      }
+    }
+    
+    throw new Error('Network error. Please check your internet connection and try again.');
   }
 
   // Mock response for testing when API is not available
