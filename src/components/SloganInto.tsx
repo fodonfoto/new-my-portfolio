@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useTypingAnimation } from '../hooks/useTypingAnimation';
+const logoImage = '/images/n 1.png';
 
 // Animation variants for continuous rotation
 const rotateVariants: Variants = {
@@ -34,8 +35,8 @@ export function SloganInto() {
           custom={10} // Duration in seconds
         >
           <img 
-            src="/n-1.png"
-            alt="Flower decoration"
+            src={logoImage} 
+            alt="Niwat Yahuadong Logo"
             className="w-16 h-16 sm:w-full sm:h-full object-contain"
           />
         </motion.div>

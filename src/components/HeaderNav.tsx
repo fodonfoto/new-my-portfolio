@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-import resumePDF from '../assets/images/Niwat_Yah_CV_2025.pdf';
+const resumePDF = '/Niwat_Yah_CV_2025.pdf';
+const logoImage = '/images/n 1.png';
 
 type NavLink = {
   name: string;
@@ -109,7 +110,7 @@ export function HeaderNav() {
             }}
           >
             <img 
-              src="/src/assets/images/n 1.png" 
+              src={logoImage} 
               alt="Niwat Yahuadong Logo"
               className="w-full h-full object-contain"
             />

@@ -8,6 +8,7 @@ import Contact from './components/Contact';
 import Social from './components/Social';
 import Portrait from './components/Portrait';
 
+
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
@@ -80,7 +81,7 @@ function App() {
               <SloganInto />
             </div>
             <div className="w-[288px] mx-auto md:mx-0">
-              <Portrait imageUrl="/src/assets/images/3d.png" alt="Your Name" />
+              <Portrait alt="Your Name" />
             </div>
           </section>
 

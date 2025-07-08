@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
 import { useTiltEffect } from '../hooks/useTiltEffect';
+const portraitImage = '/images/3d.png';
 
 type PortraitProps = {
-  imageUrl: string;
   alt?: string;
 };
 
-export function Portrait({ imageUrl, alt = 'Portrait' }: PortraitProps) {
+export function Portrait({ alt = 'Portrait' }: PortraitProps) {
   const tiltEffect = useTiltEffect({
     perspective: 1000,
     maxTilt: 10,
@@ -29,11 +29,9 @@ export function Portrait({ imageUrl, alt = 'Portrait' }: PortraitProps) {
           ref={tiltEffect.ref}
         >
           <img
-            src={imageUrl}
+            src={portraitImage}
             alt={alt}
             className="w-full h-auto object-cover"
-            width="288"
-            height="auto"
           />
         </motion.div>
       </div>
