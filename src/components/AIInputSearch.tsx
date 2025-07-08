@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Send, Loader2, AlertCircle } from "lucide-react";
+import { Globe, Send, Loader2 } from "lucide-react";
 import { useState, useCallback } from "react";
 import { Textarea } from "./ui/textarea";
 import { motion, AnimatePresence } from "framer-motion";
@@ -137,17 +137,6 @@ export default function AIInputSearch() {
             </div>
 
             <div className="relative max-w-xl w-full mx-auto">
-                {/* API Key Warning - Only show if no fallback is working */}
-                {!import.meta.env.VITE_EXA_API_KEY && (
-                    <div className="mb-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-                        <div className="text-yellow-300 text-xs space-y-1">
-                            <p>⚠️ Exa API key not configured in production.</p>
-                            <p>Please set <code className="bg-yellow-900/50 px-1 rounded">VITE_EXA_API_KEY</code> in your Netlify environment variables.</p>
-                            <p>Using demo mode with limited functionality.</p>
-                        </div>
-                    </div>
-                )}
 
                 <div
                     role="textbox"

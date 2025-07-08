@@ -63,16 +63,19 @@ class ExaSearchService {
       // For development, use fallback values if not set
       if (!this.apiKey) {
         this.apiKey = '8c4bb9e7-1c61-4aa4-ad79-7e979fdf9876';
-        console.warn('Development: Using fallback API key. For production, set EXA_API_KEY in Netlify environment variables.');
+        // Removed console.warn to eliminate alert messages
       }
     }
     
-    console.log('ExaSearchService initialized:', {
-      isDev: import.meta.env.DEV,
-      isProd: import.meta.env.PROD,
-      proxyUrl: this.proxyUrl,
-      hasApiKey: !!this.apiKey
-    });
+    // Only log in development mode
+    if (import.meta.env.DEV) {
+      console.log('ExaSearchService initialized:', {
+        isDev: import.meta.env.DEV,
+        isProd: import.meta.env.PROD,
+        proxyUrl: this.proxyUrl,
+        hasApiKey: !!this.apiKey
+      });
+    }
   }
 
   async getAnswer(options: ExaAnswerOptions): Promise<ExaAnswerResponse> {
@@ -209,54 +212,6 @@ class ExaSearchService {
     }
     
     throw new Error(`Failed to get response after ${maxRetries} attempts. Please try again later.`);
-  }
-
-  // Mock response for testing when API is not available
-  private getMockResponse(query: string): ExaAnswerResponse {
-    return {
-      answer: `This is a demo response for: "${query}"\n\nThe AI Answer feature uses Exa API to search the web and provide comprehensive answers with sources. In this demo mode, you're seeing a sample response.\n\nKey features:\n• Real-time web search\n• AI-powered answer generation\n• Source citations with relevance scores\n• Multiple perspectives on topics\n\nTo enable full functionality, configure the Exa API key in your environment variables.`,
-      sources: [
-        {
-          id: 'demo-1',
-          url: 'https://example.com/comprehensive-guide',
-          title: 'Comprehensive Guide: Understanding Your Query',
-          score: 0.95,
-          publishedDate: new Date().toISOString(),
-          author: 'Expert Author',
-          text: 'This would contain detailed information relevant to your query, sourced from authoritative websites and recent publications.'
-        },
-        {
-          id: 'demo-2', 
-          url: 'https://example.com/latest-insights',
-          title: 'Latest Insights and Analysis',
-          score: 0.87,
-          publishedDate: new Date(Date.now() - 86400000).toISOString(),
-          author: 'Research Team',
-          text: 'Additional context and analysis that provides different perspectives on the topic you\'re exploring.'
-        },
-        {
-          id: 'demo-3',
-          url: 'https://example.com/expert-opinion',
-          title: 'Expert Opinion and Best Practices',
-          score: 0.82,
-          publishedDate: new Date(Date.now() - 172800000).toISOString(),
-          author: 'Industry Expert',
-          text: 'Professional insights and best practices related to your query, helping you understand the practical applications.'
-        }
-      ],
-      requestId: `demo-${Date.now()}`,
-      autopromptString: `Enhanced search: ${query} with comprehensive analysis`
-    };
-  }
-
-  // Alternative method that falls back to mock data
-  async getAnswerWithFallback(options: ExaAnswerOptions): Promise<ExaAnswerResponse> {
-    try {
-      return await this.getAnswer(options);
-    } catch (error) {
-      console.warn('API unavailable, using demo response:', error);
-      return this.getMockResponse(options.query);
-    }
   }
 
   // Legacy method for backward compatibility - now uses Answer API
