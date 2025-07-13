@@ -1,5 +1,5 @@
+// นำเข้า React hooks และ components ต่างๆ
 import { useEffect, useState } from 'react';
-import { Toaster } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import HeaderNav from './components/HeaderNav';
 import SloganInto from './components/SloganInto';
@@ -8,12 +8,12 @@ import Contact from './components/Contact';
 import Social from './components/Social';
 import Portrait from './components/Portrait';
 
-
 function App() {
+  // สถานะสำหรับการโหลดและตำแหน่งเคอร์เซอร์
   const [isLoading, setIsLoading] = useState(true);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 
-  // Simulate loading
+  // จำลองการโหลด
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -21,7 +21,7 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Custom cursor effect
+  // เอฟเฟกต์การเคลื่อนไหวของเคอร์เซอร์
   useEffect(() => {
     const moveCursor = (e: MouseEvent) => {
       setCursorPosition({ x: e.clientX, y: e.clientY });
@@ -33,7 +33,7 @@ function App() {
     };
   }, []);
 
-  // Loading screen
+  // หน้าจอโหลด
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-background flex items-center justify-center z-50">
@@ -43,7 +43,7 @@ function App() {
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           />
-          <p className="mt-4 text-lg text-muted-foreground">Loading Portfolio...</p>
+          <p className="mt-4 text-lg text-muted-foreground">กำลังโหลด Portfolio...</p>
         </div>
       </div>
     );
@@ -51,7 +51,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans antialiased">
-      {/* Custom Cursor */}
+      {/* เอฟเฟกต์เคอร์เซอร์แบบกำหนดเอง */}
       <motion.div
         className="fixed w-6 h-6 rounded-full bg-secondary/20 pointer-events-none z-50"
         style={{
@@ -75,13 +75,13 @@ function App() {
 
       <main className="container mx-auto px-0">
         <AnimatePresence>
-          {/* Hero Section with Slogan and Portrait */}
+          {/* ส่วน Hero ประกอบด้วย Slogan และรูปภาพ Portrait */}
           <section className="w-full flex flex-col md:flex-row items-center justify-between mb-24 px-0 md:px-20">
             <div className="w-full md:w-2/1">
               <SloganInto />
             </div>
             <div className="w-[288px] mx-auto md:mx-0">
-              <Portrait alt="Your Name" />
+              <Portrait alt="รูปภาพโปรไฟล์" />
             </div>
           </section>
 
@@ -97,17 +97,6 @@ function App() {
           </p>
         </div>
       </footer>
-
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          style: {
-            background: 'hsl(var(--primary))',
-            color: 'hsl(var(--foreground))',
-            border: '1px solid hsl(var(--border))',
-          },
-        }}
-      />
     </div>
   );
 }

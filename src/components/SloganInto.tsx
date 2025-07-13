@@ -62,7 +62,7 @@ export function SloganInto() {
               href="https://fodonfoto.github.io/.com/uxui-product.html"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-md text-white border border-white/20 hover:bg-white/5 transition-colors"
+              className="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-md text-white border border-white/20 hover:bg-secondary hover:text-primary transition-colors"
             >
               View Project
             </a>
